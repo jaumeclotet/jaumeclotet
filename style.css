@@ -1,0 +1,480 @@
+/* =========================================
+   Reset & Base
+   ========================================= */
+* {
+  box-sizing: border-box;
+}
+
+:root { --ghost-size: clamp(100px, 10vw, 160px); } /* un poco más grande que antes */
+.secret-ghost {
+  width: var(--ghost-size);
+  height: auto;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  background: #111;
+  color: #eee;
+  font-family: system-ui, sans-serif;
+}
+
+/* =========================================
+   Index (grid de 6)
+   ========================================= */
+#index {
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+.grid {
+  display: grid;
+  height: 100%;
+  width: 100%;
+  gap: 4px;
+  padding: 4px;
+}
+
+/* Retrato: 2 x 3 */
+@media (max-aspect-ratio: 1/1) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(3, 1fr);
+  }
+}
+
+/* Apaisado/cuadrado: 3 x 2 */
+@media (min-aspect-ratio: 1/1) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+  }
+}
+
+/* Móvil: 1 x 6 + scroll vertical */
+@media (max-width: 640px) {
+  #index {
+    height: auto;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(6, min(50vh, 360px));
+    height: auto;
+  }
+  body {
+    overflow: auto;
+  }
+}
+
+/* =========================================
+   Tiles (home)
+   ========================================= */
+.tile {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+
+/* (Compat) Fondo del tile si existiera .bg como <img> */
+.tile .bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.9) contrast(1);
+  pointer-events: none;
+}
+
+/* Logo centrado en tile */
+.tile .logo-link {
+  position: relative;
+  z-index: 2;
+  display: block;
+}
+.tile .logo {
+  max-width: 62%;
+  max-height: 62%;
+  display: block;
+  margin: auto;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.65));
+}
+
+/* Overlay 7º proyecto (home) */
+#unlock7 {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  z-index: 10;
+  pointer-events: none; /* la capa no intercepta clics */
+}
+#unlock7.show {
+  display: flex;
+}
+#unlock7 a {
+  pointer-events: auto;
+  display: inline-block;
+  text-decoration: none;
+}
+#unlock7 img {
+  max-width: clamp(160px, 30vw, 420px);
+  max-height: 40vh;
+  filter: none;
+}
+
+/* =========================================
+   Project page
+   ========================================= */
+
+/* Contenedor principal */
+#project-root {
+  padding: 16px;
+  margin: 0 auto;
+  max-width: 800px;
+  color: #000; /* texto negro en detalle */
+  background: transparent; /* deja ver el fondo si lo hay */
+  padding-top: 10vh;
+}
+
+/* Ancho en viewport >640px */
+@media (min-width: 641px) {
+  #project-root {
+    width: 80dvw;
+  }
+}
+
+/* Fondo: usa var --bg-color si está definida desde JS */
+.project-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--bg-color, transparent);
+}
+.project-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Header / logo / sinopsis */
+.project-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.project-logo {
+  max-width: 420px;
+  width: 60vw;
+  height: auto;
+  display: block;
+}
+
+/* Sinopsis (en Spectral SC) */
+.project-sinopsis {
+  white-space: normal;
+  line-height: 1.35;
+  text-align: center;
+  max-width: 800px;
+  overflow-wrap: anywhere;
+
+  font-family: "Spectral SC", serif;
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+
+  margin-top: 5vh;
+}
+.project-sinopsis p::first-letter {
+  font-size: 1.22em;
+  line-height: 1;
+  font-weight: 400;
+}
+
+/* Textos */
+.project-textos p {
+  margin-bottom: 1em;
+  line-height: 1.6;
+}
+
+/* Galería: vertical */
+.project-galeria {
+  display: block;
+  padding: 8px 0;
+}
+.project-galeria.column {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.project-galeria .gal-img,
+.project-galeria .gal-video {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.project-galeria .gal-video {
+  outline: none;
+}
+
+.project-galeria .gal-img {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18), 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+/* Overlay para ampliar (img + video) */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.96);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+}
+.overlay.show {
+  display: flex;
+}
+.overlay .overlay-media {
+  max-width: 92vw;
+  max-height: 92vh;
+  display: block;
+}
+
+/* Elemento divertido */
+.fun {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 72px;
+  pointer-events: none;
+}
+.fun.touchable {
+  pointer-events: auto;
+}
+
+/* Botón de permiso para giroscopio (iOS) */
+.gyro-btn {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 10000;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #0008;
+  color: #fff;
+  border: 1px solid #fff3;
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+}
+
+/* Botón volver (legacy; si lo usas) */
+.back-row {
+  text-align: center;
+}
+.back-bottom {
+  display: inline-block;
+  margin: 40px auto 10px;
+  padding: 10px 16px;
+  border: 1px solid #0003;
+  color: #000;
+  text-decoration: none;
+}
+.back-bottom:hover {
+  background: #00000010;
+}
+.back {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 100;
+  text-decoration: none;
+  font-size: 1.2em;
+  padding: 8px;
+}
+
+/* =========================================
+   Comodín (bloques libres con anclas)
+   ========================================= */
+.comodin {
+  margin: 16px auto;
+  max-width: 800px;
+  margin-top: 10vh;
+}
+
+/* Alineación semántica */
+.comodin.align-center {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+.comodin.align-left {
+  margin-left: 0;
+  text-align: left;
+}
+.comodin.align-right {
+  margin-right: 0;
+  text-align: right;
+}
+
+/* Anchos legacy (compat) */
+.comodin.width-auto {
+  max-width: 800px;
+}
+.comodin.width-full {
+  max-width: none;
+  width: min(100%, 1200px);
+}
+.comodin.width-half {
+  max-width: 600px;
+}
+
+/* Nuevos anchos semánticos — en fracciones del contenedor */
+.comodin.width-whole {
+  width: 100%;
+  max-width: none;
+}
+.comodin.width-half {
+  width: 50%;
+}
+.comodin.width-third {
+  width: 33.3333%;
+}
+.comodin.width-fourth {
+  width: 25%;
+}
+
+/* Imagen / vídeo de comodín */
+.comodin-image img,
+.comodin-video video {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Imagen con enlace (accesible) */
+.comodin-image a {
+  display: block;
+  text-decoration: none;
+}
+.comodin-image a:focus-visible {
+  outline: 2px solid #8ed5ff;
+  outline-offset: 3px;
+}
+
+.comodin figcaption {
+  font-size: 0.9rem;
+  opacity: 0.75;
+  margin-top: 6px;
+}
+
+/* =========================================
+   Project navigation (random arrows)
+   ========================================= */
+.project-nav {
+  display: flex;
+  gap: 40px; /* espacio entre flechas */
+  justify-content: center;
+  align-items: center;
+  margin-top: 15vh; /* separa de los créditos/texto */
+  z-index: 20;
+}
+.nav-arrow {
+  background: transparent;
+  border: 0;
+  padding: 8px;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+.nav-arrow img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  image-rendering: auto;
+  display: block;
+}
+.nav-arrow--left:hover {
+  transform: translateX(-2px);
+}
+.nav-arrow--right:hover {
+  transform: translateX(2px);
+}
+/* Izquierda girada 180º */
+.nav-arrow--left img {
+  transform: rotate(180deg);
+}
+
+/* =========================================
+   Créditos (monoespaciado)
+   ========================================= */
+.project-creditos {
+  /* Fuente monoespaciada como en el look anterior */
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  font-variant-ligatures: none;
+}
+
+/* Compat <pre> (si existe en algún proyecto) */
+.project-creditos pre {
+  white-space: pre-wrap; /* respeta saltos de línea, pero permite cortar */
+  word-wrap: break-word; /* compat */
+  overflow-wrap: anywhere; /* corta palabras muy largas */
+  font-family: inherit; /* hereda del contenedor monoespaciado */
+}
+
+/* Estructura por líneas (render actual) */
+.project-creditos .credit-line {
+  margin: 0.3rem 0;
+  font-size: 0.9rem;
+}
+.project-creditos .credit-line strong {
+  font-weight: 700;
+}
+
+/* =========================================
+   Responsive — Comodines
+   ========================================= */
+@media (max-width: 640px) {
+  .comodin.width-half,
+  .comodin.width-third,
+  .comodin.width-fourth {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* Créditos: visibilidad de formato en monospace */
+.project-creditos {
+  font-synthesis: weight style;
+}
+
+.project-creditos em {
+  font-style: oblique 12deg; /* muchas mono no traen italic real */
+}
+
+.project-creditos u {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.project-creditos a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.project-creditos a:hover {
+  opacity: 0.9;
+}
