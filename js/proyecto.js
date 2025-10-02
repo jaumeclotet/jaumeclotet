@@ -9,6 +9,7 @@
 import { isCssColor } from "./assets.js";
 
 // Probabilidades compartidas para navegación de flechas (puedes ajustar)
+// Preferencias: IZQ (alta=Home, baja=Anterior, loca=Random) | DER (alta=Siguiente, baja=Anterior, loca=Random)
 const PROB_ALTA = 0.7; // preferido (izq=home, der=adelante)
 const PROB_BAJA = 0.2; // lo contrario
 const PROB_LOCA = 0.1; // random
@@ -93,6 +94,9 @@ async function loadProject() {
     // Quita el botón "volver" del HTML (lo sustituimos por flechas al final)
     const oldBack = document.querySelector(".back");
     if (oldBack) oldBack.remove();
+
+    // Inserta atajo fijo al About (excepto en el propio About)
+    // insertAboutShortcut(slug);
 
     // Inserta las dos flechas que navegan aleatoriamente a prev/next
     setupRandomArrows(slug);
@@ -261,7 +265,7 @@ function renderProject(p) {
                  const poster = m.poster ? ` poster="${m.poster}"` : "";
                  return `<video class="gal-video" src="${m.src}" controls playsinline preload="metadata"${poster}></video>`;
                } else {
-                 return `<img class="gal-img" src="${m.src}" loading="lazy" alt="">`;
+                 return `<img class="gal-img" src="${m.src}" loading="lazy" decoding="async" alt="">`;
                }
              })
              .join("")}
@@ -350,7 +354,7 @@ function renderCreditos(c) {
   const html = lines
     .map((line) => {
       const t = line.trim();
-      if (!t) return "";
+      if (!t) return "<br>";
       // Detecta "Etiqueta:" solo si está al principio de la línea y antes de cualquier `[` o `(`
       const m = t.match(/^([^:\[\(]+?):\s*(.*)$/);
       if (m) {
@@ -528,53 +532,18 @@ function resolvePlace(place, anchors, root) {
   return def;
 }
 
-/* Overlay — actualizado para captar también los medios de 'comodin'.
-   Cuando se llama con refresh=true, elimina overlay previo y vuelve a enganchar. */
-function setupGalleryOverlay(refresh = false) {
-  if (refresh) {
-    document.querySelectorAll(".overlay").forEach((n) => n.remove());
-    // quitamos listeners anteriores simplemente recreando todo
-  }
-
+function setupGalleryOverlay(/* refresh = false */) {
+  // [Desactivado] Overlay fullscreen al hacer click en imágenes/vídeos de la galería.
+  // Limpia cualquier overlay existente y elimina listeners previos clonando los nodos.
+  document.querySelectorAll(".overlay").forEach((n) => n.remove());
   const medias = document.querySelectorAll(
     ".project-galeria img, .project-galeria video, .comodin img, .comodin video"
   );
-  if (!medias.length) return;
-
-  const overlay = document.createElement("div");
-  overlay.className = "overlay";
-  document.body.appendChild(overlay);
-
-  function showImage(src) {
-    overlay.innerHTML = `<img class="overlay-media" src="${src}" alt="">`;
-    overlay.classList.add("show");
-  }
-  function showVideo(src, poster) {
-    overlay.innerHTML = `<video class="overlay-media"${
-      poster ? ` poster="${poster}"` : ""
-    } src="${src}" controls playsinline preload="metadata"></video>`;
-    overlay.classList.add("show");
-  }
-
   medias.forEach((el) => {
-    // Si es una imagen de comodín envuelta en <a>, no activar overlay (se respeta el enlace)
-    if (el.tagName === "IMG" && el.closest(".comodin a")) return;
-
-    el.addEventListener("click", () => {
-      if (el.tagName === "VIDEO") {
-        try { el.pause(); } catch (_) {}
-        const poster = el.getAttribute("poster") || "";
-        showVideo(el.currentSrc || el.src, poster);
-      } else {
-        showImage(el.currentSrc || el.src);
-      }
-    });
+    const clone = el.cloneNode(true);
+    el.replaceWith(clone);
   });
-
-  overlay.addEventListener("click", () => {
-    overlay.classList.remove("show");
-    overlay.innerHTML = "";
-  });
+  // Nota: los <a> en comodines siguen funcionando con su link normal.
 }
 
 /* ====== FUN: constantes compartidas (desktop + móvil) ====== */
@@ -881,6 +850,40 @@ function setupFunFollowerGyro() {
   });
 }
 
+// --- Botón fijo "About" arriba-derecha (solo si no estamos en about) ---
+function insertAboutShortcut(currentSlug) {
+  try {
+    if (currentSlug === "about") return;
+    const root = document.getElementById("project-root");
+    if (!root) return;
+
+    // Evita duplicados si se llamara dos veces
+    if (document.querySelector(".about-shortcut")) return;
+
+    const a = document.createElement("a");
+    a.className = "about-shortcut";
+    a.href = "projecte.html?slug=about";
+    a.setAttribute("aria-label", "Ir a About");
+    a.title = "About";
+
+    const img = document.createElement("img");
+    img.alt = "";
+    img.loading = "lazy";
+    img.decoding = "async";
+    img.src = "data/about.png"; // <-- reemplaza la imagen si prefieres otra ruta
+    a.appendChild(img);
+
+    const nav = root.querySelector(".project-nav");
+    if (nav) {
+      nav.insertAdjacentElement("afterend", a); // coloca el botón justo DEBAJO de las flechas
+    } else {
+      root.appendChild(a); // por si aún no existen las flechas
+    }
+  } catch (e) {
+    console.warn("[about-shortcut] skip:", e);
+  }
+}
+
 // ============ Bootstrap ============
 
 window.addEventListener("DOMContentLoaded", loadProject);
@@ -888,6 +891,48 @@ window.addEventListener("DOMContentLoaded", loadProject);
 // --- Random prev/next arrows al final del proyecto ---
 async function setupRandomArrows(currentSlug) {
   try {
+    // Caso especial: ABOUT → solo flecha izquierda a Home (no dependas de featured.json)
+    if (currentSlug === "about") {
+      const root = document.getElementById("project-root");
+      if (root) {
+        const section = document.createElement("section");
+        section.className = "project-nav";
+
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "nav-arrow nav-arrow--left";
+        b.setAttribute("aria-label", "Volver a Home");
+
+        const img = document.createElement("img");
+        img.alt = "";
+        img.loading = "lazy";
+        img.decoding = "async";
+        img.src = "data/arrow.png";
+        b.appendChild(img);
+
+        b.addEventListener("click", () => {
+          location.href = "index.html";
+        });
+
+        section.appendChild(b);
+        root.appendChild(section);
+
+        // Añade un badge/link al final del scroll: "web: meowrhino"
+        // Evita duplicados si ya existe
+        if (!root.querySelector('.about-web')) {
+          const p = document.createElement('p');
+          p.className = 'about-web';
+          const a = document.createElement('a');
+          a.href = 'https://meowrhino.github.io/becasDigMeow/';
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.textContent = 'web: meowrhino';
+          p.appendChild(a);
+          root.appendChild(p);
+        }
+      }
+      return; // corta aquí; no hace falta featured.json
+    }
     const r = await fetch("featured.json", { cache: "no-cache" });
     if (!r.ok) throw new Error("featured.json not found");
     const data = await r.json();
@@ -941,33 +986,60 @@ async function setupRandomArrows(currentSlug) {
       img.src = "data/arrow.png"; // flecha: ruta indicada por ti
       b.appendChild(img);
 
-      b.addEventListener("click", () => {
-        const preferred = side === "left" ? "prev" : "next";
-
-        if (side === "left") {
+      if (side === "left") {
+        b.addEventListener("click", () => {
+          // IZQUIERDA — mapping pedido:
+          // alta  → Home
+          // baja  → Anterior
+          // loca  → Random entre Anterior/Siguiente
           const tier = pickTier();
           if (tier === "alta") {
-            location.href = `index.html`; // Home
-            return;
-          } else if (tier === "baja") {
-            location.href = `projecte.html?slug=${encodeURIComponent(prev)}`; // Anterior
-            return;
-          } else {
-            const target = Math.random() < 0.5 ? prev : next; // loca → random puro
-            location.href = `projecte.html?slug=${encodeURIComponent(target)}`;
+            location.href = `index.html`;
             return;
           }
-        }
-
+          if (tier === "baja") {
+            location.href = `projecte.html?slug=${encodeURIComponent(prev)}`;
+            return;
+          }
+          // loca
+          const target = Math.random() < 0.5 ? prev : next;
+          location.href = `projecte.html?slug=${encodeURIComponent(target)}`;
+        });
+      } else {
         // DERECHA: se mantiene la lógica original (preferido, contrario, random)
-        const target = pickDest(preferred, prev, next);
-        location.href = `projecte.html?slug=${encodeURIComponent(target)}`;
-      });
+        b.addEventListener("click", () => {
+          const preferred = "next";
+          const target = pickDest(preferred, prev, next);
+          location.href = `projecte.html?slug=${encodeURIComponent(target)}`;
+        });
+      }
       return b;
     };
 
-    section.appendChild(mkBtn("left"));
-    section.appendChild(mkBtn("right"));
+    // Evita duplicados de atajo About si venimos de otra render
+    root.querySelectorAll(".about-shortcut").forEach(n => n.remove());
+
+    if (currentSlug === "about") {
+      section.appendChild(mkBtn("left"));
+    } else {
+      const leftBtn = mkBtn("left");
+      section.appendChild(leftBtn);
+      // Crea el atajo About como elemento central
+      const a = document.createElement("a");
+      a.className = "about-shortcut";
+      a.href = "projecte.html?slug=about";
+      a.setAttribute("aria-label", "Ir a About");
+      a.title = "About";
+      const img = document.createElement("img");
+      img.alt = "";
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.src = "data/about.png";
+      a.appendChild(img);
+      section.appendChild(a);
+      // Y ahora la flecha derecha
+      section.appendChild(mkBtn("right"));
+    }
     root.appendChild(section);
   } catch (e) {
     console.warn("Arrows setup skipped:", e);
