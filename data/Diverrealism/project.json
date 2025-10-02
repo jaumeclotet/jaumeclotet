@@ -1,0 +1,37 @@
+{
+  "slug": "diverrealism",
+  "titulo": "diverrealism",
+  "logo": "./img/titol.png",
+  "bg": "./img/fons.jpg",
+  "sinopsis": "Quan siguis gran\nel teu cor\ns'acabarà\ntransformant\nen cartó",
+  "elemento_divertido": {
+    "src": "./img/fun.png"
+  },
+  "textos": [
+    "Dblablablablabalbalabla",
+    "L’estudi es concep com un espai i un temps compartits, on creació artística i imaginari infantil es contaminen mútuament en un procés obert, sense final predeterminat. El projecte dissol fronteres entre creació professional i amateur, enginy infantil i adult, superficialitat i profunditat.",
+    "Difàcil proposa un procés creatiu flexible i mutable, capaç de qüestionar jerarquies de valor i autoria, i d’elevar resultats aparentment “menys artístics” a la mateixa consideració que les obres més premeditades. A través d’un joc constant, explora la convivència entre oposats i construeix un terreny comú on plaer, experimentació i imaginació esdevenen indissociables."
+  ],
+  "galeria": {
+    "images": [
+      "./img/diverrealism_01.jpg",
+      "./img/diverrealism_02.jpg",
+      "./img/diverrealism_03.jpg",
+      "./img/diverrealism_04.jpg",
+      "./img/diverrealism_05.jpg",
+      "./img/diverrealism_06.jpg",
+      "./img/diverrealism_07.jpg"
+        ]
+  },
+  "comodin": [
+    {
+      "id": "foto",
+      "type": "image",
+      "src": "./img/foto.png",
+      "place": "append:header",
+      "align": "center",
+      "width": "half"
+    }
+  ],
+  "creditos": "\nEspai Rampa, La Capella 2024 (Barcelona)\nProposta creada juntament amb els infants de [l’ESCOLA ALDANA](https://meowrhino.com)\ndintre de la residència Espais C 2022-2024\nConstrucció de la càmera-biombo i muntatge expositiu: *Borja Casanovas *\nAssessorament edició vídeo: **Albert Sánchez**\nFotografia: __Pep Herrero__\n"
+}
