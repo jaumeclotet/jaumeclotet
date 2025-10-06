@@ -3,8 +3,7 @@
   "titulo": "about",
   "logo": "./img/titol.png",
   "bg": "./img/fons.jpg",
-  "sinopsis": "m’ofego al pensar en el meu statement\nPensava que la meva pràctica continuava una tradició de comèdia artística, però…\nNo arriba a ser del tot Fluxus perquè sóc massa Fluix.\nEm creia Situacionista però en veritat només m’estava Situant.\nVolia ser part del Post-Humor i em vaig confondre fent Posts a Instagram…\n",
-  "elemento_divertido": {
+"sinopsis": "m’ofego al pensar en el meu statement\nPensava que la meva pràctica continuava una tradició de comèdia artística,\nperò…\nNo arriba a ser del tot Fluxus\nperquè sóc massa Fluix.\nEm creia Situacionista\nperò en veritat només m’estava Situant.\nVolia ser part del Post-Humor\ni em vaig confondre fent Posts a Instagram…",  "elemento_divertido": {
     "src": "./img/fun.png"
   },
   "textos": [
