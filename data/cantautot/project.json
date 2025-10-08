@@ -22,9 +22,9 @@
     },
     "comodin": [
         {
-            "id": "cover",
+            "id": "cover.png",
             "type": "image",
-            "src": "./img/cover.jpeg",
+            "src": "./img/cover.png",
             "place": "end",
             "align": "center",
             "width": "whole",
