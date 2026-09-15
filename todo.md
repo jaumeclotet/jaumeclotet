@@ -12,11 +12,18 @@
 - Deep‑link: `#id` hace scroll a comodines/elementos tras render.
 
 ## ⏭️ Próximos (alta prioridad)
-- **Alt para galería**: permitir `alt` por imagen en `galeria.media` y caer en `""` si no hay.
-- **Preload/Preconnect** de fuentes (si se usan más familias/pesos).
-- **srcset/sizes** para galería (mejora rendimiento en móvil).
-- **A11y overlay**: `role="dialog"`, `aria-modal="true"`, focus‑trap y cierre con ESC (ya listo) + click.
-- **Docs**: ejemplos de `comodin` con `third/fourth` en README (listo), y snippet de grid para que dos `half` queden en fila.
+- **srcset/sizes** para galería: requiere generar variantes de cada imagen (y que la Action las genere para subidas nuevas). Pendiente de decidir si compensa: las imágenes ya van comprimidas en webp.
+- **Docs**: snippet de grid en el README para que dos `half` queden en fila.
+
+## ✅ Hecho 2026-07
+- `alt` por imagen de galería (project.json + campo en el formateador).
+- Flechas con teclado ←/→ (misma lógica aleatoria).
+- Precarga de prev/next (JSON + logo) al llegar a un proyecto.
+- URLs bonitas `/{slug}/` + redirect desde `projecte.html?slug=X` + 404.html fallback.
+- OpenGraph/description/canonical por proyecto (tools/generar-paginas.mjs + GitHub Action).
+- sitemap.xml y robots.txt generados.
+- Página de error amable para slug inválido.
+- Recompresión de 11 imágenes pesadas (~1.2 MB menos).
 
 ## 🧰 Nice‑to‑have
 - Flechas: navegación con teclado (←/→) y `aria-live` al cambiar de proyecto.
@@ -27,10 +34,9 @@
 
 ## 🧪 Checklist de pruebas
 - Créditos: varias líneas con etiquetas y con links/énfasis mezclados.
-- Comodines: `image` con y sin `link` (overlay debe ignorar las enlazadas).
-- Galería: imágenes y vídeos alternados; overlay + ESC.
+- Comodines: `image` con y sin `link` (las enlazadas abren en pestaña nueva).
+- Galería: imágenes y vídeos alternados.
 - Flechas: respetan `featured.json`; si el slug no está, no aparecen.
-- Deep‑link a `#id` de comodín.
 - Móvil iOS: permiso de giro y degradación a touch/auto.
 
 ## 📌 Decisiones
